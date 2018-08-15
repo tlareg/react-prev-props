@@ -54,11 +54,10 @@ import { prevProps } from 'react-prev-props';
 // ...
 
 static getDerivedStateFromProps(nextProps, prevState) {
-  const { nextState, changedProps } = prevProps({
-    nextProps,
-    prevState,
-    checkChangesInProps: ['value', 'value2', 'value3'],
-  });
+  const { nextState, changedProps } = prevProps(
+    ['value', 'value2', 'value3'],
+    { nextProps, prevState }
+  );
 
   if (nextState) {
     // props changed, we can insert some additional logic
@@ -81,11 +80,10 @@ import { prevProps } from 'react-prev-props';
 // ...
 
 static getDerivedStateFromProps(nextProps, prevState) {
-  return resetStateWithChangedProps({
-    nextProps,
-    prevState,
-    checkChangesInProps: ['value', 'value2', 'value3'],
-  });
+  return resetStateWithChangedProps(
+    ['value', 'value2', 'value3'],
+    { nextProps, prevState }
+  );
 }
 ```
 
@@ -100,11 +98,10 @@ import { prevProps } from 'react-prev-props';
 // ...
 
 static getDerivedStateFromProps(nextProps, prevState) {
-  const { nextState, changedProps } = prevProps({
-    nextProps,
-    prevState,
-    checkChangesInProps: ['value', 'value2', 'value3'],
-  });
+  const { nextState, changedProps } = prevProps(
+    ['value', 'value2', 'value3'],
+    { nextProps, prevState }
+  );
 
   console.log(prevState)
   // => { prevProps_value: 1, prevProps_value2: 2, prevProps_value3: 3, value2: 2 };
@@ -139,11 +136,10 @@ import { prevProps } from 'react-prev-props';
 // ...
 
 static getDerivedStateFromProps(nextProps, prevState) {
-  const nextState = resetStateWithChangedProps({
-    nextProps,
-    prevState,
-    checkChangesInProps: ['value', 'value2', 'value3'],
-  });
+  const nextState = resetStateWithChangedProps(
+    ['value', 'value2', 'value3'],
+    { nextProps, prevState }
+  );
 
   console.log(prevState)
   // => { prevProps_value: 1, prevProps_value2: 2, prevProps_value3: 3, value2: 2 };

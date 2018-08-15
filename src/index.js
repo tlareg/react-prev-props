@@ -1,34 +1,45 @@
-const prevProps = ({
-  nextProps,
-  prevState,
-  checkChangesInProps,
-}) => checkChangesInProps.reduce((acc, propName) => {
-  const nextPropValue = nextProps[propName]
-  const prevPropStateKey = `prevProps_${propName}`
-  const prevPropValue = prevState[prevPropStateKey]
+const PREV_PROPS_STATE_KEY = '_prevProps';
 
-  if (nextPropValue === prevPropValue)  return acc
+const getPrevProps = (prevState = {}) => prevState[PREV_PROPS_STATE_KEY]
 
-  const { nextState, changedProps } = acc
-  return {
-    nextState: {
-      ...nextState,
-      [prevPropStateKey]: nextPropValue,
-    },
-    changedProps: {
-      ...changedProps,
-      [propName]: nextPropValue
-    },
-  }
-}, {
-  nextState: null,
-  changedProps: {},
+const getPrevProp = (prevState, propName) => getPrevProps(prevState)[propName]
+
+const setPrevProps = (prevState = {}, prevProps) => ({
+  ...prevState,
+  [PREV_PROPS_STATE_KEY]: prevProps
 })
 
-export default prevProps
+const updatePrevProps = (prevState = {}, changedProps) =>
+  setPrevProps(prevState, { ...getPrevProps(prevState), ...changedProps })
 
-export const resetStateWithChangedProps = (opts) => {
-  const { nextState, changedProps } = prevProps(opts);
+
+const createIsPropChangedFn = (nextProps, prevState) => propName =>
+  nextProps[propName] !== getPrevProp(prevState, propName)
+
+const findChangedProps = (nextProps, prevState, propNames) => {
+  const isPropChanged = createIsPropChangedFn(nextProps, prevState);
+
+  return propNames.reduce((changedProps, propName) => {
+    if (isPropChanged(propName))  {
+      if (!changedProps) changedProps = {}
+      changedProps[propName] = nextProps[propName];
+    }
+
+    return changedProps
+  }, null)
+}
+
+
+export default (propNames, { nextProps, prevState }) => {
+  const changedProps = findChangedProps(nextProps, prevState, propNames);
+  const nextState = changedProps
+    ? updatePrevProps(prevState, changedProps)
+    : null
+  return { nextState, changedProps }
+}
+
+export const resetStateWithChangedProps = (propNames, opts) => {
+  const { nextState, changedProps } = prevProps(propNames, opts);
   return nextState ? { ...nextState, ...changedProps } : nextState;
 }
 
