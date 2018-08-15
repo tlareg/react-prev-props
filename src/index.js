@@ -1,22 +1,34 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+const prevProps = ({
+  nextProps,
+  prevState,
+  checkChangesInProps,
+}) => checkChangesInProps.reduce((acc, propName) => {
+  const nextPropValue = nextProps[propName]
+  const prevPropStateKey = `prevProps_${propName}`
+  const prevPropValue = prevState[prevPropStateKey]
 
-import styles from './styles.css'
+  if (nextPropValue === prevPropValue)  return acc
 
-export default class ExampleComponent extends Component {
-  static propTypes = {
-    text: PropTypes.string
+  const { nextState, changedProps } = acc
+  return {
+    nextState: {
+      ...nextState,
+      [prevPropStateKey]: nextPropValue,
+    },
+    changedProps: {
+      ...changedProps,
+      [propName]: nextPropValue
+    },
   }
+}, {
+  nextState: null,
+  changedProps: {},
+})
 
-  render() {
-    const {
-      text
-    } = this.props
+export default prevProps
 
-    return (
-      <div className={styles.test}>
-        Example Component: {text}
-      </div>
-    )
-  }
+export const resetStateWithChangedProps = (opts) => {
+  const { nextState, changedProps } = prevProps(opts);
+  return nextState ? { ...nextState, ...changedProps } : nextState;
 }
+

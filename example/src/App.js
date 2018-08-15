@@ -1,12 +1,20 @@
 import React, { Component } from 'react'
 
-import ExampleComponent from 'react-prev-props'
+import prevProps, { resetStateWithChangedProps } from 'react-prev-props'
 
 export default class App extends Component {
+  state = {}
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    console.log(prevProps);
+    console.log(resetStateWithChangedProps);
+    return null
+  }
+
   render () {
     return (
       <div>
-        <ExampleComponent text='Modern React component module' />
+        AAA
       </div>
     )
   }

@@ -1,6 +1,6 @@
 # react-prev-props
 
-> 
+>
 
 [![NPM](https://img.shields.io/npm/v/react-prev-props.svg)](https://www.npmjs.com/package/react-prev-props) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
@@ -10,21 +10,169 @@
 npm install --save react-prev-props
 ```
 
-## Usage
+## About
+
+Little helper to read previous props in getDerivedStateFromProps. Previous props are saved in component local state.
+Before using this lib, make sure your really want to. Maybe there is better way. Please read:
+
+- [react blog - you probably dont need derived state](https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html)
+- [react blog - updating state based on props](https://reactjs.org/blog/2018/03/27/update-on-async-rendering.html#updating-state-based-on-props)
+- [react docs - getDerivedStateFromProps](https://reactjs.org/docs/react-component.html#static-getderivedstatefromprops)
+- [react blog - 16.4 bugfix for getDerivedStateFromProps](https://reactjs.org/blog/2018/05/23/react-v-16-4.html#bugfix-for-getderivedstatefromprops)
+
+## How to use it?
+
+Code example is best description.
+
+Before:
 
 ```jsx
-import React, { Component } from 'react'
+UNSAFE_componentWillReceiveProps(nextProps) {
+  const nextState = {};
 
-import MyComponent from 'react-prev-props'
-
-class Example extends Component {
-  render () {
-    return (
-      <MyComponent />
-    )
+  if (nextProps.value !== this.props.value) {
+    nextState.value = nextProps.value;
   }
+
+  if (nextProps.value2 !== this.props.value2) {
+    nextState.value2 = nextProps.value2;
+  }
+
+  if (nextProps.value3 !== this.props.value3) {
+    nextState.value3 = nextProps.value3;
+  }
+
+  this.setState(nextState);
 }
 ```
+
+After:
+
+```jsx
+import { prevProps } from 'react-prev-props';
+
+// ...
+
+static getDerivedStateFromProps(nextProps, prevState) {
+  const { nextState, changedProps } = prevProps({
+    nextProps,
+    prevState,
+    checkChangesInProps: ['value', 'value2', 'value3'],
+  });
+
+  if (nextState) {
+    // props changed, we can insert some additional logic
+    return {
+      ...nextState,
+      // we can reset state props with changed props
+      ...changedProps,
+    }
+  }
+
+  return nextState;
+}
+```
+
+Or:
+
+```jsx
+import { prevProps } from 'react-prev-props';
+
+// ...
+
+static getDerivedStateFromProps(nextProps, prevState) {
+  return resetStateWithChangedProps({
+    nextProps,
+    prevState,
+    checkChangesInProps: ['value', 'value2', 'value3'],
+  });
+}
+```
+
+## How it works?
+
+Prev props are cached in local state.
+Code example is best explanation.
+
+```jsx
+import { prevProps } from 'react-prev-props';
+
+// ...
+
+static getDerivedStateFromProps(nextProps, prevState) {
+  const { nextState, changedProps } = prevProps({
+    nextProps,
+    prevState,
+    checkChangesInProps: ['value', 'value2', 'value3'],
+  });
+
+  console.log(prevState)
+  // => { prevProps_value: 1, prevProps_value2: 2, prevProps_value3: 3, value2: 2 };
+
+  console.log(nextProps)
+  // => { value: 1, value2: 999, value3: 3 };
+
+  console.log(nextState)
+  // => { prevProps_value: 1, prevProps_value2: 999, prevProps_value3: 3, value2: 2 };
+
+  console.log(changedProps)
+  // => { value2: 999 }
+
+  if (nextState) {
+    // props changed, we can insert some additional logic
+    return {
+      ...nextState,
+      // we can reset state props with changed props
+      ...changedProps,
+    }
+  }
+
+  return nextState;
+}
+```
+
+Or:
+
+```jsx
+import { prevProps } from 'react-prev-props';
+
+// ...
+
+static getDerivedStateFromProps(nextProps, prevState) {
+  const nextState = resetStateWithChangedProps({
+    nextProps,
+    prevState,
+    checkChangesInProps: ['value', 'value2', 'value3'],
+  });
+
+  console.log(prevState)
+  // => { prevProps_value: 1, prevProps_value2: 2, prevProps_value3: 3, value2: 2 };
+
+  console.log(nextProps)
+  // => { value: 1, value2: 999, value3: 3 };
+
+  console.log(nextState)
+  // => { prevProps_value: 1, prevProps_value2: 999, prevProps_value3: 3, value2: 999 };
+
+  return nextState;
+}
+```
+
+## FAQ
+
+- why nextState can't just look like:
+  ```
+  nextState = { value: nextProps.value }
+  ```
+  instead of:
+  ```
+  nextState = {
+    prevProps_value: nextProps.value,
+    value: nextProps.value
+  }
+  ```
+  ?
+  - because: [Anti-pattern: Erasing state when props change](https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#anti-pattern-erasing-state-when-props-change)
 
 ## License
 
