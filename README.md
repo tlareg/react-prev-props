@@ -59,7 +59,7 @@ static getDerivedStateFromProps(nextProps, prevState) {
     { nextProps, prevState }
   );
 
-  if (nextState) {
+  if (changedProps) {
     // props changed, we can insert some additional logic
     return {
       ...nextState,
@@ -75,7 +75,7 @@ static getDerivedStateFromProps(nextProps, prevState) {
 Or:
 
 ```jsx
-import { prevProps } from 'react-prev-props';
+import { resetStateWithChangedProps } from 'react-prev-props';
 
 // ...
 
@@ -85,6 +85,37 @@ static getDerivedStateFromProps(nextProps, prevState) {
     { nextProps, prevState }
   );
 }
+```
+
+Or:
+
+```jsx
+import { getDerivedStateFromPropsEnhanced } from 'react-prev-props';
+
+// ...
+
+static getDerivedStateFromProps(nextProps, prevState) {
+  return getDerivedStateFromPropsEnhanced(
+      ['value', 'value2', 'value3'],
+      (nextProps, prevState, prevProps) => {
+        const nextState = {};
+
+        if (nextProps.value !== prevProps.value) {
+          nextState.value = nextProps.value;
+        }
+
+        if (nextProps.value2 !== prevProps.value2) {
+          nextState.value2 = nextProps.value2;
+        }
+
+        if (nextProps.value3 !== prevProps.value3) {
+          nextState.value3 = nextProps.value3;
+        }
+
+        return Object.keys(nextState).length ? nextState : null;
+    }
+  );
+)
 ```
 
 ## How it works?
@@ -104,18 +135,24 @@ static getDerivedStateFromProps(nextProps, prevState) {
   );
 
   console.log(prevState)
-  // => { prevProps_value: 1, prevProps_value2: 2, prevProps_value3: 3, value2: 2 };
+  // => {
+  //   _prevProps: { value: 1, value2: 2, value3: 3 },
+  //   value2: 2
+  // }
 
   console.log(nextProps)
   // => { value: 1, value2: 999, value3: 3 };
 
   console.log(nextState)
-  // => { prevProps_value: 1, prevProps_value2: 999, prevProps_value3: 3, value2: 2 };
+  // => {
+  //   _prevProps: { value: 1, value2: 999, value3: 3 },
+  //   value2: 2
+  // }
 
   console.log(changedProps)
   // => { value2: 999 }
 
-  if (nextState) {
+  if (changedProps) {
     // props changed, we can insert some additional logic
     return {
       ...nextState,
@@ -131,7 +168,7 @@ static getDerivedStateFromProps(nextProps, prevState) {
 Or:
 
 ```jsx
-import { prevProps } from 'react-prev-props';
+import { resetStateWithChangedProps } from 'react-prev-props';
 
 // ...
 
@@ -142,13 +179,19 @@ static getDerivedStateFromProps(nextProps, prevState) {
   );
 
   console.log(prevState)
-  // => { prevProps_value: 1, prevProps_value2: 2, prevProps_value3: 3, value2: 2 };
+  // => {
+  //   _prevProps: { value: 1, value2: 2, value3: 3 },
+  //   value2: 2
+  // }
 
   console.log(nextProps)
   // => { value: 1, value2: 999, value3: 3 };
 
   console.log(nextState)
-  // => { prevProps_value: 1, prevProps_value2: 999, prevProps_value3: 3, value2: 999 };
+  // => {
+  //   _prevProps: { value: 1, value2: 2, value3: 3 },
+  //   value2: 999
+  // }
 
   return nextState;
 }
@@ -157,13 +200,17 @@ static getDerivedStateFromProps(nextProps, prevState) {
 ## FAQ
 
 - why nextState can't just look like:
-  ```
-  nextState = { value: nextProps.value }
+  ```js
+  nextState = {
+    value: nextProps.value
+  }
   ```
   instead of:
-  ```
+  ```js
   nextState = {
-    prevProps_value: nextProps.value,
+    _prevProps: {
+      value: nextProps.value
+    },
     value: nextProps.value
   }
   ```

@@ -30,7 +30,7 @@ const findChangedProps = (nextProps, prevState, propNames) => {
 }
 
 
-export default (propNames, { nextProps, prevState }) => {
+export const prevProps = (propNames, { nextProps, prevState }) => {
   const changedProps = findChangedProps(nextProps, prevState, propNames);
   const nextState = changedProps
     ? updatePrevProps(prevState, changedProps)
@@ -40,6 +40,23 @@ export default (propNames, { nextProps, prevState }) => {
 
 export const resetStateWithChangedProps = (propNames, opts) => {
   const { nextState, changedProps } = prevProps(propNames, opts);
-  return nextState ? { ...nextState, ...changedProps } : nextState;
+  return nextState && changedProps
+    ? { ...nextState, ...changedProps }
+    : nextState;
+}
+
+export const getDerivedStateFromPropsEnhanced = (propNames, getDerivedStateFromProps) => {
+  return (nextProps, prevState) => {
+    const prevProps = getPrevProps(prevState);
+    const changedProps = findChangedProps(nextProps, prevState, propNames);
+
+    const derivedState = getDerivedStateFromProps(nextProps, prevState, prevProps)
+
+    const nextState = derivedState && changedProps
+      ? updatePrevProps(derivedState, changedProps)
+      : null
+
+    return nextState
+  }
 }
 
