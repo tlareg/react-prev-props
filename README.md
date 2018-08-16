@@ -6,6 +6,8 @@
 
 ## Install
 
+@TODO: publish
+
 ```bash
 npm install --save react-prev-props
 ```
@@ -97,25 +99,25 @@ import { getDerivedStateFromPropsEnhanced } from 'react-prev-props';
 static getDerivedStateFromProps(nextProps, prevState) {
   return getDerivedStateFromPropsEnhanced(
       ['value', 'value2', 'value3'],
-      (nextProps, prevState, prevProps) => {
+      (nextProps, prevState, prevProps, changedProps = {}) => {
         const nextState = {};
 
-        if (nextProps.value !== prevProps.value) {
+        if (changedProps.hasOwnProperty('value')) {
           nextState.value = nextProps.value;
         }
 
-        if (nextProps.value2 !== prevProps.value2) {
+        if (changedProps.hasOwnProperty('value2')) {
           nextState.value2 = nextProps.value2;
         }
 
-        if (nextProps.value3 !== prevProps.value3) {
+        if (changedProps.hasOwnProperty('value3')) {
           nextState.value3 = nextProps.value3;
         }
 
         return Object.keys(nextState).length ? nextState : null;
     }
-  );
-)
+  )(nextProps, prevState);
+}
 ```
 
 ## How it works?
@@ -196,6 +198,10 @@ static getDerivedStateFromProps(nextProps, prevState) {
   return nextState;
 }
 ```
+
+## API
+
+@TODO
 
 ## FAQ
 
