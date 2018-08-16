@@ -13,7 +13,7 @@ const setup = () => {
 
   return {
     propNames,
-    prevState,
+    prevState
   }
 }
 
@@ -80,7 +80,6 @@ describe('prevProps', () => {
     const expectedChangedProps = { value: 111, value2: 999, value3: 888 }
     expect(changedProps).toEqual(expectedChangedProps)
   })
-
 })
 
 describe('resetStateWithChangedProps', () => {
@@ -117,7 +116,7 @@ describe('resetStateWithChangedProps', () => {
     const expectedNextState = {
       _prevProps: { value: 1, value2: 999, value3: 888 },
       value2: 999,
-      value3: 888,
+      value3: 888
     }
 
     expect(nextState).not.toEqual(prevState)
@@ -134,7 +133,7 @@ describe('resetStateWithChangedProps', () => {
       _prevProps: { value: 111, value2: 999, value3: 888 },
       value: 111,
       value2: 999,
-      value3: 888,
+      value3: 888
     }
 
     expect(nextState).not.toEqual(prevState)
@@ -150,24 +149,24 @@ describe('getDerivedStateFromPropsEnhanced', () => {
     class TestComponent {
       static getDerivedStateFromProps(nextProps, prevState) {
         return getDerivedStateFromPropsEnhanced(
-            ['value', 'value2', 'value3'],
-            (nextProps, prevState, prevProps, changedProps = {}) => {
-              const nextState = {};
+          ['value', 'value2', 'value3'],
+          (nextProps, prevState, prevProps, changedProps = {}) => {
+            const nextState = {}
 
-              expect(nextProps).toEqual(inputNextProps)
-              expect(prevState).toEqual(inputPrevState)
-              expect(prevProps).toEqual({ value: 1, value2: 2, value3: 3 })
-              expect(changedProps).toEqual({ value2: 999, value3: 333 })
+            expect(nextProps).toEqual(inputNextProps)
+            expect(prevState).toEqual(inputPrevState)
+            expect(prevProps).toEqual({ value: 1, value2: 2, value3: 3 })
+            expect(changedProps).toEqual({ value2: 999, value3: 333 })
 
-              if (changedProps.hasOwnProperty('value')) {
-                nextState.value = nextProps.value;
-              }
+            if (changedProps.hasOwnProperty('value')) {
+              nextState.value = nextProps.value
+            }
 
-              if (changedProps.hasOwnProperty('value2')) {
-                nextState.value2 = nextProps.value2;
-              }
+            if (changedProps.hasOwnProperty('value2')) {
+              nextState.value2 = nextProps.value2
+            }
 
-              return Object.keys(nextState).length ? nextState : null;
+            return Object.keys(nextState).length ? nextState : null
           }
         )(nextProps, prevState)
       }
@@ -177,10 +176,9 @@ describe('getDerivedStateFromPropsEnhanced', () => {
 
     const expectedNextState = {
       _prevProps: { value: 1, value2: 999, value3: 333 },
-      value2: 999,
+      value2: 999
     }
 
     expect(nextState).toEqual(expectedNextState)
   })
 })
-

@@ -6,8 +6,6 @@
 
 ## Install
 
-@TODO: publish
-
 ```bash
 npm install --save react-prev-props
 ```
