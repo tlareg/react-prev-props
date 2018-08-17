@@ -2,7 +2,8 @@
 
 >
 
-[![NPM](https://img.shields.io/npm/v/react-prev-props.svg)](https://www.npmjs.com/package/react-prev-props) 
+[![Build Status](https://travis-ci.org/tlareg/react-prev-props.svg?branch=master)](https://travis-ci.org/tlareg/react-prev-props)
+[![NPM](https://img.shields.io/npm/v/react-prev-props.svg)](https://www.npmjs.com/package/react-prev-props)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/tlareg/bind-em-all/blob/master/LICENSE)
 
