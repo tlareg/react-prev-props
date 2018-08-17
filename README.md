@@ -189,7 +189,7 @@ static getDerivedStateFromProps(nextProps, prevState) {
 
   console.log(nextState)
   // => {
-  //   _prevProps: { value: 1, value2: 2, value3: 3 },
+  //   _prevProps: { value: 1, value2: 999, value3: 3 },
   //   value2: 999
   // }
 
